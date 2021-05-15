@@ -43,9 +43,8 @@ namespace SS.Core.Services
                     activityData[i].Description);
 
                 await _context.Activities.AddAsync(currActivity);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
         }
     }
 }
