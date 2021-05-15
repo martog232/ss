@@ -34,13 +34,15 @@ namespace SS.Core.Services
         {
             var activityData = _excelMapper.Fetch<ActivitySeedModel>().ToArray();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < activityData.Length; i++)
             {
-               await _context.Activities.AddAsync(new Activity(activityData[i].Time,
+                var currActivity = new Activity(activityData[i].Time,
                     activityData[i].EventContext,
                     activityData[i].Component,
                     activityData[i].EventName,
-                    activityData[i].Description));
+                    activityData[i].Description);
+
+                await _context.Activities.AddAsync(currActivity);
             }
 
             await _context.SaveChangesAsync();

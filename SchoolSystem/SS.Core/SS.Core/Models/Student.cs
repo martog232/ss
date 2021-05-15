@@ -7,14 +7,18 @@ namespace SS.Core.Models
     public class Student
     {
         public Student() { }
-        // public Student(int id, double result) 
-        // { 
-        //     Id = id; 
-        //     Result = result; 
-        // }
+        public Student(int id, double result)
+        {
+            Id = id;
+            Result = result;
+        }
+        //public Student(double result) 
+        //{ 
+        //    Result = result; 
+        //}
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
-        //public int Id { get; set; }
+        public int Id { get; set; }
         public double Result { get; set; }
         public ICollection<StudentsCourses> StudentsCourses { get; set; }
         public ICollection<Activity> Activities { get; set; }

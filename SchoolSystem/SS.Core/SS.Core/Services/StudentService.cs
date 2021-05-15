@@ -68,12 +68,12 @@ namespace SS.Core.Services
 
             foreach (var dto in studentsYearOne)
             {
-               // await _context.Students.AddAsync(new Student(dto.Id, dto.Result));
+                await _context.Students.AddAsync(new Student(dto.Id, dto.Result));
             }
 
             foreach (var dto in studentsYearTwo)
             {
-               // await _context.Students.AddAsync(new Student(dto.Id, dto.Result));
+                await _context.Students.AddAsync(new Student(dto.Id, dto.Result));
             }
 
             await _context.SaveChangesAsync();

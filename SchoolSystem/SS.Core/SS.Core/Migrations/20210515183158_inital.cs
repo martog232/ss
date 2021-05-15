@@ -2,7 +2,7 @@
 
 namespace SS.Core.Migrations
 {
-    public partial class Initial746sdsa465 : Migration
+    public partial class inital : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,8 +22,7 @@ namespace SS.Core.Migrations
                 name: "Students",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Result = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>

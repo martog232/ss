@@ -10,8 +10,8 @@ using SS.Core.Database;
 namespace SS.Core.Migrations
 {
     [DbContext(typeof(SSDbContext))]
-    [Migration("20210511225149_Initial746sdsa465dsadas")]
-    partial class Initial746sdsa465dsadas
+    [Migration("20210515183158_inital")]
+    partial class inital
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

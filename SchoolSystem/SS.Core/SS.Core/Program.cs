@@ -10,8 +10,8 @@ namespace SS.Core
         {
             var context = new SSDbContext();
 
-            //var studentService = new StudentService(context);
-            //studentService.SeedStudents();
+            var studentService = new StudentService(context);
+            await studentService.SeedStudents();
 
             var activityService = new ActivityService(context);
             await activityService.SeedActivity();
