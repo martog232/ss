@@ -4,6 +4,7 @@ using SS.Core.Database;
 using SS.Core.DTOs;
 using SS.Core.Models;
 using SS.Core.Services.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ namespace SS.Core.Services
     {
         private const string filePath1 = @"C:\Users\Ali\Desktop\pts\InputData\Course A_StudentsResults_Year 1.xlsx";
         private const string filePath2 = @"C:\Users\Ali\Desktop\pts\InputData\Course A_StudentsResults_Year 2.xlsx";
+
+        private const string COMPONENT = "File submissions";
+        private const string EVENT_CONTEXT = "Assignment: Качване на курсови задачи и проекти";
 
         private readonly SSDbContext _context;
         private readonly ExcelMapper[] _excelMapper;
@@ -59,6 +63,69 @@ namespace SS.Core.Services
             }
 
             return resultList;
+        }
+
+        public IEnumerable<FrequencyOutputModel> GetFrequency()
+        {
+            List<FrequencyOutputModel> abosoluteAndRelativeFrequency = new List<FrequencyOutputModel>();
+
+            for (int i = 2; i <= 6; i++)
+            {
+                List<Student> studentsWithConcreteResults = GetStudentsByComponentAndEventContext(COMPONENT, EVENT_CONTEXT)
+                    .Where(s => s.Result == (double)i)
+                    .ToList();
+
+                int absoluteFrequency = studentsWithConcreteResults.Count();
+                double relativeFrequnecy = studentsWithConcreteResults.Count() / this._context.Students.Count();
+                abosoluteAndRelativeFrequency.Add(new FrequencyOutputModel(i, absoluteFrequency, relativeFrequnecy));
+
+            }
+
+            return abosoluteAndRelativeFrequency;
+        }
+
+        public double getCorrelationAnalysis()
+        {
+            IEnumerable<FrequencyOutputModel> absoluteAndRelativeFrequency = GetFrequency();
+
+            IEnumerable<Student> students = GetStudentsByComponentAndEventContext(COMPONENT, EVENT_CONTEXT);
+
+            double sumOfStudentsResults = students
+                .Select(s => s.Result)
+                .Sum();
+
+            int sumOfAbsoluteAndRelativeFrequency = absoluteAndRelativeFrequency
+                .Select(s => s.Result)
+                .Sum();
+
+            double formula = students.Count() * sumOfStudentsResults - sumOfAbsoluteAndRelativeFrequency * sumOfStudentsResults;
+
+            formula = formula / Math.Sqrt((
+                    students.Count() - sumOfStudentsResults) * (students.Count() * (students
+                    .Select(s => Math.Sqrt(s.Result))
+                    .Sum() - Math.Sqrt(sumOfAbsoluteAndRelativeFrequency))
+                ));
+            return formula;
+        }
+
+        public CentralTendentionModel getCentralTendention()
+        {
+
+            //Get Average
+            double average = _context.Students.
+                Select(s => s.Result).
+                Average();
+
+            //Get Mode
+            var groupedStudents = _context.Students.GroupBy(x => x);
+            var maxCount = groupedStudents.Max(g => g.Count());
+            var mostCommons = groupedStudents.Where(x => x.Count() == maxCount).Select(x => x.Key).ToArray();
+            double mode = mostCommons[0].Result;
+
+            //Get Median
+
+
+            return null;
         }
 
         public async Task SeedStudents()
