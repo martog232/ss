@@ -112,6 +112,62 @@ namespace SS.Core.Services
             return null;
         }
 
+        public DispersionOutputModel GetDispersionOutput() 
+        {
+            //Deviation
+            IEnumerable<Student> students = GetStudentsByComponentAndEventContext(COMPONENT, EVENT_CONTEXT);
+
+            int studentsCount = students.Count();
+
+            if (studentsCount == 0)
+            {
+                //throw new NoStudentsForStandardDeviationException("Cannot calculate standard deviation");
+            }
+
+            double average = students.
+                Select(s => s.Result).
+                Average();
+
+            double sum = 0.0;
+
+            foreach (Student s in students)
+            {
+                double step2 = s.Result - average;
+                double result = Math.Pow(step2, 2);
+                sum += result;
+            }
+            sum /= studentsCount;
+
+            double deviation = Math.Sqrt(sum);
+
+            //Scope
+
+            double maxResult = students.Select(s => s.Result).Max();
+            double minResult = students.Select(s => s.Result).Min();
+            double scope = maxResult - minResult;
+
+            //Dispersion
+
+            double sumOfStudentsResults = 0;
+
+            foreach (Student student in students)
+            {
+                sumOfStudentsResults += student.Result;
+            }
+
+            double dispersion = 0;
+
+
+            foreach (Student student in students)
+            {
+                dispersion += (student.Result - sumOfStudentsResults / studentsCount * (student.Result - (sumOfStudentsResults / studentsCount))) * sumOfStudentsResults / sumOfStudentsResults;
+            }
+
+            dispersion = Math.Sqrt(dispersion);
+
+            return new DispersionOutputModel(scope, deviation, dispersion);
+        }
+
         public async Task SeedStudents()
         {
             var studentsYearOne = _excelMapper[0].Fetch<StudentSeedModel>();
