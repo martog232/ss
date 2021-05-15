@@ -1,5 +1,6 @@
 ﻿using SS.Core.Database;
 using SS.Core.Services;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SS.Core
@@ -11,10 +12,17 @@ namespace SS.Core
             var context = new SSDbContext();
 
             var studentService = new StudentService(context);
-            await studentService.SeedStudents();
+            //await studentService.SeedStudents();
 
             var activityService = new ActivityService(context);
-            await activityService.SeedActivity();
+            //await activityService.SeedActivity();
+
+            System.Console.WriteLine(studentService.GetCorrelationAnalysis());
+            studentService
+                .GetFrequency()
+                .ToList()
+                .ForEach(x => System.Console.WriteLine($"{x.Result} {x.RelativeFrequency} {x.AbsoluteFrequency}"));
+
         }
     }
 }

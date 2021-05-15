@@ -58,7 +58,7 @@ namespace SS.Core.Services
             {
                 foreach (var id in studentIds)
                 {
-                    //if (st.Id == id) resultList.Add(st);
+                    if (st.Id == id) resultList.Add(st);
                 }
             }
 
@@ -76,39 +76,23 @@ namespace SS.Core.Services
                     .ToList();
 
                 int absoluteFrequency = studentsWithConcreteResults.Count();
-                double relativeFrequnecy = studentsWithConcreteResults.Count() / this._context.Students.Count();
+                double relativeFrequnecy = studentsWithConcreteResults.Count() / _context.Students.Count();
                 abosoluteAndRelativeFrequency.Add(new FrequencyOutputModel(i, absoluteFrequency, relativeFrequnecy));
-
             }
 
             return abosoluteAndRelativeFrequency;
         }
 
-        public double getCorrelationAnalysis()
+        public double GetCorrelationAnalysis()
         {
-            IEnumerable<FrequencyOutputModel> absoluteAndRelativeFrequency = GetFrequency();
+            var absoluteAndRelativeFrequency = GetFrequency();
+            var students = GetStudentsByComponentAndEventContext(COMPONENT, EVENT_CONTEXT);
+            var result = ComputeCoeff(absoluteAndRelativeFrequency.Select(s => (double)s.Result), students.Select(s => s.Result));
 
-            IEnumerable<Student> students = GetStudentsByComponentAndEventContext(COMPONENT, EVENT_CONTEXT);
-
-            double sumOfStudentsResults = students
-                .Select(s => s.Result)
-                .Sum();
-
-            int sumOfAbsoluteAndRelativeFrequency = absoluteAndRelativeFrequency
-                .Select(s => s.Result)
-                .Sum();
-
-            double formula = students.Count() * sumOfStudentsResults - sumOfAbsoluteAndRelativeFrequency * sumOfStudentsResults;
-
-            formula = formula / Math.Sqrt((
-                    students.Count() - sumOfStudentsResults) * (students.Count() * (students
-                    .Select(s => Math.Sqrt(s.Result))
-                    .Sum() - Math.Sqrt(sumOfAbsoluteAndRelativeFrequency))
-                ));
-            return formula;
+            return result;
         }
 
-        public CentralTendentionModel getCentralTendention()
+        public CentralTendentionModel GetCentralTendention()
         {
 
             //Get Average
@@ -144,6 +128,21 @@ namespace SS.Core.Services
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        private double ComputeCoeff(IEnumerable<double> values1, IEnumerable<double> values2)
+        {
+            var avg1 = values1.Average();
+            var avg2 = values2.Average();
+
+            var sum1 = values1.Zip(values2, (x1, y1) => (x1 - avg1) * (y1 - avg2)).Sum();
+
+            var sumSqr1 = values1.Sum(x => Math.Pow((x - avg1), 2.0));
+            var sumSqr2 = values2.Sum(y => Math.Pow((y - avg2), 2.0));
+
+            var result = sum1 / Math.Sqrt(sumSqr1 * sumSqr2);
+
+            return result;
         }
     }
 }
