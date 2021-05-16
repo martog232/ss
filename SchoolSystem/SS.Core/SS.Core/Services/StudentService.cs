@@ -42,10 +42,10 @@ namespace SS.Core.Services
             return _context.Students.ToList();
         }
 
-        public IEnumerable<Student> GetStudentsByComponentAndEventContext(string component, string eventContext)
+        public IEnumerable<Student> GetStudentsByComponentAndEventContext()
         {
             var studentIds = _context.Activities
-                .Where(l => l.Component == component && l.EventContext == eventContext)
+                .Where(l => l.Component == COMPONENT && l.EventContext == EVENT_CONTEXT)
                 .Select(l => l.StudentId)
                 .Distinct()
                 .ToListAsync()
@@ -71,7 +71,7 @@ namespace SS.Core.Services
 
             for (int i = 2; i <= 6; i++)
             {
-                List<Student> studentsWithConcreteResults = GetStudentsByComponentAndEventContext(COMPONENT, EVENT_CONTEXT)
+                List<Student> studentsWithConcreteResults = GetStudentsByComponentAndEventContext()
                     .Where(s => s.Result == (double)i)
                     .ToList();
 
@@ -86,7 +86,7 @@ namespace SS.Core.Services
         public double GetCorrelationAnalysis()
         {
             var absoluteAndRelativeFrequency = GetFrequency();
-            var students = GetStudentsByComponentAndEventContext(COMPONENT, EVENT_CONTEXT);
+            var students = GetStudentsByComponentAndEventContext();
             var result = ComputeCoeff(absoluteAndRelativeFrequency.Select(s => (double)s.Result), students.Select(s => s.Result));
 
             return result;
@@ -112,10 +112,10 @@ namespace SS.Core.Services
             return null;
         }
 
-        public DispersionOutputModel GetDispersionOutput() 
+        public DispersionOutputModel GetDispersionOutput()
         {
             //Deviation
-            IEnumerable<Student> students = GetStudentsByComponentAndEventContext(COMPONENT, EVENT_CONTEXT);
+            IEnumerable<Student> students = GetStudentsByComponentAndEventContext();
 
             int studentsCount = students.Count();
 

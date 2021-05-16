@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SS.Core.Services.Contracts
 {
-    interface IActivityService
+    public interface IActivityService
     {
         public Activity GetActivity(int id);
         public IEnumerable<Activity> GetActivities();
